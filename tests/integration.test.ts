@@ -305,6 +305,14 @@ async function runIntegrationSuite() {
     // 3. Verify .vercelignore exists
     const vercelIgnorePath = resolve(process.cwd(), '.vercelignore');
     if (!existsSync(vercelIgnorePath)) throw new Error('Missing .vercelignore');
+
+    // 4. Verify .npmrc exists for legacy-peer-deps
+    const npmrcPath = resolve(process.cwd(), '.npmrc');
+    if (!existsSync(npmrcPath)) throw new Error('Missing .npmrc');
+    const npmrcContent = readFileSync(npmrcPath, 'utf-8');
+    if (!npmrcContent.includes('legacy-peer-deps=true')) {
+      throw new Error('.npmrc must include legacy-peer-deps=true');
+    }
   });
 
   // Output test results
