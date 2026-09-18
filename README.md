@@ -118,3 +118,38 @@ npm run dev
 npm run build
 npm start
 ```
+
+---
+
+## Vercel Deployment
+
+This project is configured out-of-the-box for seamless Vercel deployment:
+
+### Architecture on Vercel
+- **Frontend**: Built using Vite (`vite build`) and statically deployed to Vercel's global Edge CDN via `outputDirectory: "dist"`.
+- **Backend API**: The Express API routes (`/api/*`) run as a native Vercel Serverless Function entry point via `/api/index.ts`.
+- **Rewrites**: `vercel.json` maps incoming `/api/*` traffic to the serverless function, and routes client SPA requests to `index.html`.
+
+### 1-Click / Git Deployment via Vercel Dashboard
+1. Push this repository to GitHub or GitLab.
+2. In the [Vercel Dashboard](https://vercel.com/new), select **Import Project** and select your repository.
+3. Vercel automatically detects the Vite framework and reads `vercel.json`:
+   - **Framework Preset**: Vite
+   - **Build Command**: `vite build`
+   - **Output Directory**: `dist`
+4. (Optional) Set environment variables in the Vercel project settings:
+   - `GEMINI_API_KEY`: (Optional) If enabling Gemini-powered features.
+5. Click **Deploy**.
+
+### Deploy via Vercel CLI
+```bash
+# Install Vercel CLI globally
+npm i -g vercel
+
+# Deploy preview
+vercel
+
+# Deploy to production
+vercel --prod
+```
+

@@ -274,6 +274,39 @@ async function runIntegrationSuite() {
     if (!existsSync(checklistPath)) throw new Error('Missing VIDEO_RECORDING_CHECKLIST.md');
   });
 
+  // 12. Vercel Deployment Readiness Check
+  await test('Validates Vercel deployment setup (vercel.json, api/index.ts, .vercelignore)', 'Vercel Deployment Readiness', async () => {
+    // 1. Verify vercel.json exists and has valid configuration
+    const vercelConfigPath = resolve(process.cwd(), 'vercel.json');
+    if (!existsSync(vercelConfigPath)) throw new Error('Missing vercel.json configuration');
+    const vercelConfig = JSON.parse(readFileSync(vercelConfigPath, 'utf-8'));
+
+    if (vercelConfig.framework !== 'vite') {
+      throw new Error(`Expected framework to be "vite", got "${vercelConfig.framework}"`);
+    }
+    if (vercelConfig.buildCommand !== 'vite build') {
+      throw new Error(`Expected buildCommand to be "vite build", got "${vercelConfig.buildCommand}"`);
+    }
+    if (vercelConfig.outputDirectory !== 'dist') {
+      throw new Error(`Expected outputDirectory to be "dist", got "${vercelConfig.outputDirectory}"`);
+    }
+    if (!Array.isArray(vercelConfig.rewrites) || vercelConfig.rewrites.length === 0) {
+      throw new Error('Expected vercel.json to define rewrites for /api');
+    }
+
+    // 2. Verify api/index.ts exists and exports default Express app
+    const apiIndexPath = resolve(process.cwd(), 'api/index.ts');
+    if (!existsSync(apiIndexPath)) throw new Error('Missing api/index.ts serverless entry point');
+    const apiIndexContent = readFileSync(apiIndexPath, 'utf-8');
+    if (!apiIndexContent.includes('export default app') && !apiIndexContent.includes('export default')) {
+      throw new Error('api/index.ts must export default app for Vercel serverless function');
+    }
+
+    // 3. Verify .vercelignore exists
+    const vercelIgnorePath = resolve(process.cwd(), '.vercelignore');
+    if (!existsSync(vercelIgnorePath)) throw new Error('Missing .vercelignore');
+  });
+
   // Output test results
   results.forEach((t, idx) => {
     const icon = t.passed ? '✓ PASS' : '✗ FAIL';

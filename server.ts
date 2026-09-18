@@ -5,33 +5,11 @@
 
 import express from 'express';
 import path from 'path';
-import { apiRouter } from './server/routes.ts';
-import { runSuite } from './tests/testRunner.ts';
+import { createExpressApp } from './server/app.ts';
 
 async function startServer() {
-  const app = express();
+  const app = createExpressApp();
   const PORT = 3000;
-
-  // JSON Body Parser
-  app.use(express.json());
-
-  // API Routes
-  app.use('/api', apiRouter);
-
-  // In-app test execution endpoint to run unit & pipeline tests dynamically
-  app.get('/api/test/run', async (req, res) => {
-    try {
-      const results = await runSuite();
-      res.json({ success: true, results });
-    } catch (err: any) {
-      res.status(500).json({ success: false, error: err.message });
-    }
-  });
-
-  // Health check
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', time: new Date().toISOString() });
-  });
 
   // Vite middleware for development vs static build for production
   if (process.env.NODE_ENV !== 'production') {
