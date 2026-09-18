@@ -1,0 +1,8 @@
+{
+  "name": "Remix Open Source Security Transition Monitor",
+  "description": "Identifies when hobby open-source projects reach growth milestones and guides maintainers through educational website security assessments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
